@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Clock</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #FFFFFF;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .clock {
+            margin: 10px;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #fff;
+            width: 200px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="clock" id="newYork">New York: --:--:--</div>
+    <div class="clock" id="london">London: --:--:--</div>
+    <div class="clock" id="tokyo">Tokyo: --:--:--</div>
+    <div class="clock" id="sydney">Sydney: --:--:--</div>
+    <div class="clock" id="dubai">Dubai: --:--:--</div>
+    <div class="clock" id="losAngeles">Los Angeles: --:--:--</div>
+    <script>
+        function updateClocks() {
+            const now = new Date();
+            const options = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById('newYork').innerText = 'New York: ' + now.toLocaleTimeString('en-US', { ...options, timeZone: 'America/New_York' });
+            document.getElementById('london').innerText = 'London: ' + now.toLocaleTimeString('en-GB', { ...options, timeZone: 'Europe/London' });
+            document.getElementById('tokyo').innerText = 'Tokyo: ' + now.toLocaleTimeString('ja-JP', { ...options, timeZone: 'Asia/Tokyo' });
+            document.getElementById('sydney').innerText = 'Sydney: ' + now.toLocaleTimeString('en-AU', { ...options, timeZone: 'Australia/Sydney' });
+            document.getElementById('dubai').innerText = 'Dubai: ' + now.toLocaleTimeString('en-AE', { ...options, timeZone: 'Asia/Dubai' });
+            document.getElementById('losAngeles').innerText = 'Los Angeles: ' + now.toLocaleTimeString('en-US', { ...options, timeZone: 'America/Los_Angeles' });
+        }
+        setInterval(updateClocks, 1000);
+        updateClocks();
+    </script>
+</body>
+</html>
