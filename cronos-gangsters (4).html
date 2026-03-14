@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -601,6 +602,60 @@
 
 
 
+  <!-- ── Contract Address Banner ── -->
+  <div id="contractBanner" style="
+    background: linear-gradient(135deg, rgba(212,160,23,0.08), rgba(192,57,43,0.06));
+    border: 1px solid rgba(212,160,23,0.3);
+    border-radius: 12px;
+    padding: 12px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  ">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-size:18px">🔫</span>
+      <span style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--gold)">$GANG CONTRACT</span>
+      <span id="contractAddrDisplay" style="font-family:'Space Mono',monospace;font-size:13px;color:var(--text);word-break:break-all">0x23E1D61FbA6Df8F61805059A5f52eFbb1f5613c7</span>
+    </div>
+    <div style="display:flex;gap:8px;flex-shrink:0">
+      <button onclick="copyContractAddress(this)" style="
+        background: rgba(212,160,23,0.15);
+        border: 1px solid rgba(212,160,23,0.4);
+        color: var(--gold);
+        border-radius: 8px;
+        padding: 7px 14px;
+        cursor: pointer;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 14px;
+        letter-spacing: 1px;
+        transition: all .2s;
+        white-space: nowrap;
+      " onmouseover="this.style.background='rgba(212,160,23,0.25)'" onmouseout="this.style.background='rgba(212,160,23,0.15)'">
+        📋 COPY
+      </button>
+      <a href="https://cronoscan.com/token/0x23E1D61FbA6Df8F61805059A5f52eFbb1f5613c7" target="_blank" rel="noopener" style="
+        background: rgba(212,160,23,0.15);
+        border: 1px solid rgba(212,160,23,0.4);
+        color: var(--gold);
+        border-radius: 8px;
+        padding: 7px 14px;
+        cursor: pointer;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 14px;
+        letter-spacing: 1px;
+        text-decoration: none;
+        transition: all .2s;
+        white-space: nowrap;
+        display:inline-block;
+      " onmouseover="this.style.background='rgba(212,160,23,0.25)'" onmouseout="this.style.background='rgba(212,160,23,0.15)'">
+        ↗ CRONOSCAN
+      </a>
+    </div>
+  </div>
+
   <!-- ══════════════════════════════════════
        SWAP PAGE
   ══════════════════════════════════════ -->
@@ -614,7 +669,7 @@
           <div class="swap-box-label">You Pay</div>
           <div class="swap-row">
             <input class="swap-input" id="swapFrom" type="number" placeholder="0.0" oninput="calcSwap()" />
-            <select class="token-select" id="tokenFrom" onchange="calcSwap()">
+            <select class="token-select" id="tokenFrom" onchange="calcSwap();updateSwapBalances()">
               <option value="CRO">🔴 CRO</option>
               <option value="GANG">🔫 GANG</option>
               <option value="USDC">💵 USDC</option>
@@ -624,6 +679,7 @@
             </select>
           </div>
           <div class="swap-usd" id="fromUSD">≈ $0.00</div>
+          <div class="input-balance" id="swapFromBalance" style="text-align:right;margin-top:4px">Balance: —</div>
         </div>
 
         <!-- FLIP -->
@@ -636,7 +692,7 @@
           <div class="swap-box-label">You Receive</div>
           <div class="swap-row">
             <input class="swap-input" id="swapTo" type="number" placeholder="0.0" readonly />
-            <select class="token-select" id="tokenTo" onchange="calcSwap()">
+            <select class="token-select" id="tokenTo" onchange="calcSwap();updateSwapBalances()">
               <option value="GANG">🔫 GANG</option>
               <option value="CRO">🔴 CRO</option>
               <option value="USDC">💵 USDC</option>
@@ -646,6 +702,7 @@
             </select>
           </div>
           <div class="swap-usd" id="toUSD">≈ $0.00</div>
+          <div class="input-balance" id="swapToBalance" style="text-align:right;margin-top:4px">Balance: —</div>
         </div>
 
         <!-- Info -->
@@ -697,7 +754,7 @@
 
         <div id="liq-add">
           <label class="input-label">Token A</label>
-          <div class="input-wrap" style="margin-bottom:12px">
+          <div class="input-wrap" style="margin-bottom:4px">
             <input class="input-field" id="liqA" type="number" placeholder="0.0" oninput="calcLiqRatio()" />
             <select class="token-select" id="liqTokenA" onchange="calcLiqRatio();updateBalanceDisplays()" style="position:absolute;right:0;top:50%;transform:translateY(-50%);border:none;width:auto">
               <option value="CRO">🔴 CRO</option>
@@ -706,23 +763,32 @@
             </select>
             <span class="input-max" style="right:100px" onclick="setMax('liqA')">MAX</span>
           </div>
-          <div class="input-balance" id="balA">Balance: —</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div class="swap-usd" id="liqAUSD" style="margin-top:0">≈ $0.00</div>
+            <div class="input-balance" id="balA">Balance: —</div>
+          </div>
+          <button id="approveTokenABtn" class="btn-secondary" onclick="approveLiqToken('A')" style="display:none;width:100%;margin-bottom:10px;font-size:15px">🔓 APPROVE TOKEN A</button>
 
-          <div style="text-align:center;color:var(--gold);font-size:22px;margin:8px 0">+</div>
+          <div style="text-align:center;color:var(--gold);font-size:22px;margin:4px 0">+</div>
 
-          <label class="input-label">Token B</label>
+          <label class="input-label">Token B <span style="color:var(--muted);font-size:11px;font-weight:400">(auto-calculated)</span></label>
           <div class="input-wrap" style="margin-bottom:4px">
-            <input class="input-field" id="liqB" type="number" placeholder="0.0" />
-            <select class="token-select" id="liqTokenB" onchange="updateBalanceDisplays()" style="position:absolute;right:0;top:50%;transform:translateY(-50%);border:none;width:auto">
+            <input class="input-field" id="liqB" type="number" placeholder="0.0" readonly style="opacity:0.8;cursor:not-allowed" />
+            <select class="token-select" id="liqTokenB" onchange="calcLiqRatio();updateBalanceDisplays()" style="position:absolute;right:0;top:50%;transform:translateY(-50%);border:none;width:auto">
               <option value="GANG">🔫 GANG</option>
               <option value="CRO">🔴 CRO</option>
               <option value="USDC">💵 USDC</option>
             </select>
           </div>
-          <div class="input-balance" id="balB">Balance: —</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div class="swap-usd" id="liqBUSD" style="margin-top:0">≈ $0.00</div>
+            <div class="input-balance" id="balB">Balance: —</div>
+          </div>
+          <button id="approveTokenBBtn" class="btn-secondary" onclick="approveLiqToken('B')" style="display:none;width:100%;margin-bottom:10px;font-size:15px">🔓 APPROVE TOKEN B</button>
 
-          <div class="swap-info" style="margin-top:16px;display:flex">
-            <div class="info-row"><span>Pool Share</span><span class="info-val" id="liqShare">—</span></div>
+          <div class="swap-info" style="margin-top:8px;display:flex">
+            <div class="info-row"><span>Rate</span><span class="info-val" id="liqRate">—</span></div>
+            <div class="info-row" style="margin-top:6px"><span>Pool Share</span><span class="info-val" id="liqShare">—</span></div>
             <div class="info-row" style="margin-top:6px"><span>LP Tokens</span><span class="info-val" id="liqLP">—</span></div>
           </div>
 
@@ -870,7 +936,41 @@
       <div class="card" style="padding:20px;">
         <div style="color:var(--muted);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">Current Price</div>
         <div style="font-size:1.4rem;font-weight:700;color:var(--gold);font-family:'Space Mono',monospace;" id="gangTokenPrice">$0.0024</div>
-        
+      </div>
+    </div>
+
+    <!-- Treasury Card -->
+    <div class="card" style="padding:24px;margin-bottom:20px;background:linear-gradient(135deg,rgba(212,160,23,0.06),rgba(39,174,96,0.04));border-color:rgba(212,160,23,0.3);">
+      <div class="card-title" style="margin-bottom:16px;">🏦 Treasury & Fee Structure</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+        <div style="background:var(--surface2);border-radius:12px;padding:16px;border:1px solid var(--border);">
+          <div style="font-size:11px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">Treasury Wallet</div>
+          <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--gold);word-break:break-all;margin-bottom:8px;">0xaA3C5749628610fF410EF9133a4ac4f58e9A52eA</div>
+          <button onclick="copyTreasuryAddress(this)" style="background:rgba(212,160,23,0.1);border:1px solid rgba(212,160,23,0.3);color:var(--gold);border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:'Bebas Neue',sans-serif;letter-spacing:1px;">📋 COPY</button>
+          <a href="https://cronoscan.com/address/0xaA3C5749628610fF410EF9133a4ac4f58e9A52eA" target="_blank" rel="noopener" style="margin-left:6px;background:rgba(212,160,23,0.1);border:1px solid rgba(212,160,23,0.3);color:var(--gold);border-radius:6px;padding:4px 10px;font-size:11px;text-decoration:none;font-family:'Bebas Neue',sans-serif;letter-spacing:1px;">↗ SCAN</a>
+        </div>
+        <div style="background:var(--surface2);border-radius:12px;padding:16px;border:1px solid var(--border);">
+          <div style="font-size:11px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">Protocol Fees Earned</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--green);letter-spacing:1px;" id="treasuryEarnedDisplay">$0.00</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Accumulates with every swap</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+        <div style="background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border);text-align:center;">
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Total Swap Fee</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--gold);">0.30%</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Per swap</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border);text-align:center;">
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">LP Providers Get</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--green);">0.25%</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Liquidity reward</div>
+        </div>
+        <div style="background:rgba(212,160,23,0.08);border-radius:10px;padding:14px;border:1px solid rgba(212,160,23,0.3);text-align:center;">
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Treasury Gets</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--gold);">0.05%</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Protocol fee</div>
+        </div>
       </div>
     </div>
 
@@ -981,6 +1081,7 @@
       <span class="input-max" onclick="setMax('stakeAmt')">MAX</span>
     </div>
     <div class="input-balance" id="stakeBalance">Balance: —</div>
+    <button class="btn-secondary" id="stakeApproveBtn" onclick="approveLP()" style="display:none;width:100%;margin-top:12px;font-size:16px">APPROVE LP TOKEN</button>
     <button class="btn-primary" id="stakeConfirmBtn" onclick="confirmStake()">CONFIRM STAKE</button>
   </div>
 </div>
@@ -1024,6 +1125,21 @@ const CONTRACTS = {
   USDT: "0x66e428c3f67a68878562e79A0234c1F83c208770",
 };
 
+// ── Treasury & Fee Configuration ──────────────────────────────
+// All protocol fees are sent to this wallet address.
+// To activate on-chain: call factory.setFeeTo(TREASURY.address) after deploying.
+const TREASURY = {
+  address: "0xaA3C5749628610fF410EF9133a4ac4f58e9A52eA",
+  // Fee breakdown (of the total 0.3% swap fee):
+  //   0.25% → LP providers (liquidity rewards)
+  //   0.05% → Treasury (protocol fee → your wallet)
+  swapFeeTotal:    0.30, // % charged on every swap
+  lpFee:           0.25, // % that goes to liquidity providers
+  protocolFee:     0.05, // % that goes to treasury wallet
+  // Liquidity fee: 0.3% of deposit value on add liquidity
+  liquidityFee:    0.30,
+};
+
 // ── $GANG Token Info ──────────────────────────────────────────
 const GANG_TOKEN_INFO = {
   name:        "Cronos Gangsters",
@@ -1051,6 +1167,16 @@ const ERC20_ABI = [
   "function approve(address,uint256) returns(bool)",
   "function transfer(address,uint256) returns(bool)",
   "function symbol() view returns(string)",
+];
+
+const FACTORY_ABI = [
+  "function feeTo() view returns(address)",
+  "function feeToSetter() view returns(address)",
+  "function setFeeTo(address) external",
+  "function setFeeToSetter(address) external",
+  "function getPair(address,address) view returns(address)",
+  "function allPairs(uint256) view returns(address)",
+  "function allPairsLength() view returns(uint256)",
 ];
 
 
@@ -1109,10 +1235,12 @@ let state = {
   chainId: null,
   slippage: 0.5,
   balances: {},
+  lpBalances: {},
   txHistory: [],
   activeFarm: null,
-  stakeAction: null, // 'stake' | 'unstake'
-  stakedAmounts: {}, // pid -> staked LP amount
+  stakeAction: null,
+  stakedAmounts: {},
+  treasuryEarned: 0, // cumulative protocol fees earned in USD
 };
 
 const CRONOS_CHAIN_ID = 25;
@@ -1456,6 +1584,18 @@ async function loadBalances() {
       } catch(e) { console.warn("Chef load failed:", e); }
     }
 
+    // Load LP token wallet balances per farm (if lpAddr known)
+    if (!state.lpBalances) state.lpBalances = {};
+    for (const farm of FARMS) {
+      if (farm.lpAddr && farm.lpAddr !== "native") {
+        try {
+          const lp = new ethers.Contract(farm.lpAddr, ERC20_ABI, state.provider);
+          const bal = await lp.balanceOf(state.address);
+          state.lpBalances[farm.pid] = parseFloat(ethers.formatUnits(bal, 18));
+        } catch { state.lpBalances[farm.pid] = 0; }
+      }
+    }
+
     updateBalanceDisplays();
   } catch (e) { console.error("loadBalances:", e); }
 }
@@ -1468,6 +1608,19 @@ function updateBalanceDisplays() {
   const balB = document.getElementById("balB");
   if (balA) balA.textContent = fmt(document.getElementById("liqTokenA")?.value || "CRO");
   if (balB) balB.textContent = fmt(document.getElementById("liqTokenB")?.value || "GANG");
+  updateSwapBalances();
+}
+
+function updateSwapBalances() {
+  const fmt = (sym) => state.balances[sym] !== undefined
+    ? `Balance: ${state.balances[sym].toFixed(4)} ${sym}`
+    : "Balance: —";
+  const fromSym = document.getElementById("tokenFrom")?.value || "CRO";
+  const toSym   = document.getElementById("tokenTo")?.value   || "GANG";
+  const elFrom  = document.getElementById("swapFromBalance");
+  const elTo    = document.getElementById("swapToBalance");
+  if (elFrom) elFrom.textContent = fmt(fromSym);
+  if (elTo)   elTo.textContent   = fmt(toSym);
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1493,7 +1646,7 @@ function getSymbol(sel) {
   return sel.value || sel.options[sel.selectedIndex]?.value || "CRO";
 }
 
-function calcSwap() {
+async function calcSwap() {
   const fromSel = document.getElementById("tokenFrom");
   const toSel   = document.getElementById("tokenTo");
   const fromAmt = parseFloat(document.getElementById("swapFrom").value) || 0;
@@ -1505,31 +1658,58 @@ function calcSwap() {
     return;
   }
 
-  const fromPrice = TOKENS[fromSym]?.price || 1;
-  const toPrice   = TOKENS[toSym]?.price   || 1;
-
   if (fromAmt <= 0) {
     document.getElementById("swapTo").value = "";
     document.getElementById("swapInfo").style.display = "none";
     return;
   }
 
-  // Simulated AMM output (real version calls Router.getAmountsOut)
-  const usdValue  = fromAmt * fromPrice;
-  const fee       = usdValue * 0.003;
-  const impact    = Math.min(usdValue / 50000 * 100, 15); // mock impact
-  const netUSD    = usdValue * (1 - 0.003);
-  const outAmt    = netUSD / toPrice;
+  const fromPrice = TOKENS[fromSym]?.price || 1;
+  const toPrice   = TOKENS[toSym]?.price   || 1;
+  let outAmt, fee, impact;
 
-  document.getElementById("swapTo").value    = outAmt.toFixed(6);
-  document.getElementById("fromUSD").textContent = `≈ $${usdValue.toFixed(2)}`;
-  document.getElementById("toUSD").textContent   = `≈ $${netUSD.toFixed(2)}`;
-  document.getElementById("swapInfo").style.display = "flex";
-  document.getElementById("swapRate").textContent   = `1 ${fromSym} = ${(fromPrice/toPrice).toFixed(6)} ${toSym}`;
-  document.getElementById("swapImpact").textContent = `${impact.toFixed(2)}%`;
-  document.getElementById("swapMin").textContent    = `${(outAmt * (1 - state.slippage/100)).toFixed(6)} ${toSym}`;
-  document.getElementById("swapFee").textContent    = `$${fee.toFixed(4)}`;
-  document.getElementById("swapRoute").textContent  = `${fromSym} → ${toSym}`;
+  // ── Live mode: use Router.getAmountsOut for real price ──
+  if (CONTRACTS.ROUTER && state.provider) {
+    try {
+      const router   = new ethers.Contract(CONTRACTS.ROUTER, ROUTER_ABI, state.provider);
+      const fromToken = TOKENS[fromSym];
+      const toToken   = TOKENS[toSym];
+      const amtIn    = ethers.parseUnits(String(fromAmt), fromToken.decimals);
+      const fromAddr = fromToken.address === "native" ? CONTRACTS.WCRO : fromToken.address;
+      const toAddr   = toToken.address   === "native" ? CONTRACTS.WCRO : toToken.address;
+      const amounts  = await router.getAmountsOut(amtIn, [fromAddr, toAddr]);
+      outAmt  = parseFloat(ethers.formatUnits(amounts[1], toToken.decimals));
+      const usdIn  = fromAmt * fromPrice;
+      const usdOut = outAmt  * toPrice;
+      fee    = usdIn * 0.003;
+      impact = Math.abs((usdOut - usdIn) / usdIn * 100);
+    } catch(e) {
+      // fallback to price-based calc if router call fails
+      const usdValue = fromAmt * fromPrice;
+      fee    = usdValue * 0.003;
+      impact = Math.min(usdValue / 50000 * 100, 15);
+      outAmt = (usdValue * (1 - 0.003)) / toPrice;
+    }
+  } else {
+    // ── Mock mode: calculate from live CoinGecko prices ──
+    const usdValue = fromAmt * fromPrice;
+    fee    = usdValue * 0.003;
+    impact = Math.min(usdValue / 50000 * 100, 15);
+    outAmt = (usdValue * (1 - 0.003)) / toPrice;
+  }
+
+  const usdValue = fromAmt * fromPrice;
+  const netUSD   = outAmt  * toPrice;
+
+  document.getElementById("swapTo").value             = outAmt.toFixed(6);
+  document.getElementById("fromUSD").textContent      = "≈ $" + usdValue.toFixed(2);
+  document.getElementById("toUSD").textContent        = "≈ $" + netUSD.toFixed(2);
+  document.getElementById("swapInfo").style.display   = "flex";
+  document.getElementById("swapRate").textContent     = "1 " + fromSym + " = " + (fromPrice / toPrice).toFixed(6) + " " + toSym;
+  document.getElementById("swapImpact").textContent   = impact.toFixed(2) + "%";
+  document.getElementById("swapMin").textContent      = (outAmt * (1 - state.slippage / 100)).toFixed(6) + " " + toSym;
+  document.getElementById("swapFee").textContent      = "$" + fee.toFixed(4);
+  document.getElementById("swapRoute").textContent    = fromSym + " → " + toSym;
 }
 
 function flipTokens() {
@@ -1568,8 +1748,9 @@ async function doSwap() {
   if (fromSym === toSym) { showToast("Select two different tokens.", "error"); return; }
 
   if (!state.address) {
-    await connectWallet();
-    if (!state.address) return;
+    showToast("Connect your wallet first.", "error");
+    connectWallet();
+    return;
   }
 
   const btn = document.getElementById("swapBtn");
@@ -1581,6 +1762,10 @@ async function doSwap() {
     showToast("⏳ Processing swap…", "");
     await simulateTx(1800);
     const mockHash = "0x" + Math.random().toString(16).slice(2, 14);
+    // Track protocol fee earned (0.05% of swap value in USD)
+    const swapUSD = fromAmt * (TOKENS[fromSym]?.price || 1);
+    const protocolFeeUSD = swapUSD * (TREASURY.protocolFee / 100);
+    state.treasuryEarned = (state.treasuryEarned || 0) + protocolFeeUSD;
     addTx("Swap", `${fromAmt} ${fromSym} → ${toAmt.toFixed(4)} ${toSym}`, mockHash, "ok");
     showToast(`✅ Swapped ${fromAmt} ${fromSym} for ~${toAmt.toFixed(4)} ${toSym}`, "success");
     btn.innerHTML = "SWAP"; btn.disabled = false;
@@ -1637,6 +1822,68 @@ async function doSwap() {
   }
 }
 
+// ── Live price fetching from CoinGecko ───────────────────────
+const COINGECKO_IDS = {
+  CRO:  "crypto-com-chain",
+  USDC: "usd-coin",
+  USDT: "tether",
+  WBTC: "wrapped-bitcoin",
+  WETH: "weth",
+  GANG: null, // not yet listed — keep mock price
+};
+
+async function fetchLivePrices() {
+  try {
+    const ids = Object.values(COINGECKO_IDS).filter(Boolean).join(",");
+    const res  = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`);
+    if (!res.ok) return;
+    const data = await res.json();
+    for (const [sym, id] of Object.entries(COINGECKO_IDS)) {
+      if (id && data[id]?.usd) {
+        TOKENS[sym].price = data[id].usd;
+      }
+    }
+    // Refresh swap calc if user has an amount entered
+    const fromAmt = parseFloat(document.getElementById("swapFrom")?.value);
+    if (fromAmt > 0) calcSwap();
+    calcLiqRatio();
+  } catch(e) { /* silently fail — keep mock prices */ }
+}
+
+// Fetch on load and every 30s
+fetchLivePrices();
+setInterval(fetchLivePrices, 30000);
+
+// ── Approve liquidity tokens ──────────────────────────────────
+async function approveLiqToken(side) {
+  if (!state.address) { showToast("Connect your wallet first.", "error"); connectWallet(); return; }
+  const sym  = document.getElementById(side === "A" ? "liqTokenA" : "liqTokenB")?.value;
+  const tok  = TOKENS[sym];
+  if (!tok || tok.address === "native") { showToast("CRO doesn't need approval.", ""); return; }
+  if (!CONTRACTS.ROUTER) { showToast("Router not deployed yet — approval not needed in mock mode.", ""); return; }
+
+  const btnId = side === "A" ? "approveTokenABtn" : "approveTokenBBtn";
+  const btn   = document.getElementById(btnId);
+  const orig  = btn.innerHTML;
+  btn.innerHTML = "⏳ Approving…";
+  btn.disabled  = true;
+
+  try {
+    showToast("⏳ Approving " + sym + " for Router…", "");
+    const contract = new ethers.Contract(tok.address, ERC20_ABI, state.signer);
+    const tx = await contract.approve(CONTRACTS.ROUTER, ethers.MaxUint256);
+    await tx.wait();
+    showToast("✅ " + sym + " approved! You can now add liquidity.", "success");
+    btn.innerHTML     = "✅ " + sym + " APPROVED";
+    btn.style.color   = "var(--green)";
+    btn.style.borderColor = "var(--green)";
+  } catch(e) {
+    showToast("❌ Approval failed: " + (e?.reason || e?.message || "").slice(0, 80), "error");
+    btn.innerHTML = orig;
+    btn.disabled  = false;
+  }
+}
+
 // ══════════════════════════════════════════════════════════════
 // LIQUIDITY
 // ══════════════════════════════════════════════════════════════
@@ -1648,12 +1895,46 @@ function switchLiqTab(tab, btn) {
 }
 
 function calcLiqRatio() {
+  const symA = document.getElementById("liqTokenA")?.value || "CRO";
+  const symB = document.getElementById("liqTokenB")?.value || "GANG";
   const aVal = parseFloat(document.getElementById("liqA").value) || 0;
-  if (aVal <= 0) { document.getElementById("liqShare").textContent = "—"; return; }
-  // Mock pool ratio 1:1 for demo
-  document.getElementById("liqB").value = (aVal * 0.0253).toFixed(6);
+
+  if (aVal <= 0) {
+    document.getElementById("liqShare").textContent = "—";
+    document.getElementById("liqLP").textContent    = "—";
+    document.getElementById("liqBUSD").textContent  = "≈ $0.00";
+    document.getElementById("liqAUSD").textContent  = "≈ $0.00";
+    const rateEl = document.getElementById("liqRate");
+    if (rateEl) rateEl.textContent = "—";
+    return;
+  }
+
+  const priceA = TOKENS[symA]?.price || 1;
+  const priceB = TOKENS[symB]?.price || 1;
+
+  // Auto-calculate Token B amount based on price ratio (equal USD value each side)
+  const bVal = (aVal * priceA) / priceB;
+  document.getElementById("liqB").value = bVal.toFixed(6);
+
+  // USD values
+  const usdA = aVal * priceA;
+  const usdB = bVal * priceB;
+  document.getElementById("liqAUSD").textContent = "≈ $" + usdA.toFixed(2);
+  document.getElementById("liqBUSD").textContent = "≈ $" + usdB.toFixed(2);
+
+  // Rate
+  const rateEl = document.getElementById("liqRate");
+  if (rateEl) rateEl.textContent = "1 " + symA + " = " + (priceA / priceB).toFixed(6) + " " + symB;
+
+  // LP estimate and pool share
   document.getElementById("liqShare").textContent = "< 0.01%";
-  document.getElementById("liqLP").textContent    = (aVal * 0.0024).toFixed(6) + " GANG-LP";
+  document.getElementById("liqLP").textContent    = (Math.sqrt(usdA * usdB) * 0.001).toFixed(6) + " LP";
+
+  // Show approve buttons for non-CRO tokens (CRO is native, no approval needed)
+  const btnA = document.getElementById("approveTokenABtn");
+  const btnB = document.getElementById("approveTokenBBtn");
+  if (btnA) btnA.style.display = (CONTRACTS.ROUTER && symA !== "CRO" && state.address) ? "block" : "none";
+  if (btnB) btnB.style.display = (CONTRACTS.ROUTER && symB !== "CRO" && state.address) ? "block" : "none";
 }
 
 async function doAddLiquidity() {
@@ -1662,15 +1943,31 @@ async function doAddLiquidity() {
   const aAmt = parseFloat(document.getElementById("liqA").value);
   const bAmt = parseFloat(document.getElementById("liqB").value);
   if (!aAmt || !bAmt) { showToast("Enter both token amounts.", "error"); return; }
-  if (!state.address) { await connectWallet(); if (!state.address) return; }
+  if (!state.address) { showToast("Connect your wallet first.", "error"); connectWallet(); return; }
 
   const isMock = !CONTRACTS.ROUTER;
   showToast("⏳ Adding liquidity…", "");
   try {
     if (isMock) {
       await simulateTx(2000);
-      addTx("Add LP", `${aAmt} ${symA} + ${bAmt} ${symB}`, "0x" + Math.random().toString(16).slice(2,12), "ok");
+      addTx("Add LP", aAmt + " " + symA + " + " + bAmt + " " + symB, "0x" + Math.random().toString(16).slice(2,12), "ok");
       showToast("✅ Liquidity added! You received GANG-LP tokens.", "success");
+
+      // Track protocol fee earned (0.3% of deposit value)
+      const depositUSD = (aAmt * (TOKENS[symA]?.price || 1)) + (bAmt * (TOKENS[symB]?.price || 1));
+      const liqFeeUSD = depositUSD * (TREASURY.liquidityFee / 100);
+      state.treasuryEarned = (state.treasuryEarned || 0) + liqFeeUSD;
+
+      // Grant mock LP balance to matching farm(s)
+      if (!state.lpBalances) state.lpBalances = {};
+      const lpReceived = aAmt * 0.0024;
+      const matchPid = FARMS.findIndex(f => f.tokens.includes(symA) && f.tokens.includes(symB));
+      if (matchPid >= 0) {
+        state.lpBalances[matchPid] = (state.lpBalances[matchPid] || 0) + lpReceived;
+        const lpBalEl = document.getElementById("lpbal-" + matchPid);
+        if (lpBalEl) lpBalEl.textContent = state.lpBalances[matchPid].toFixed(4);
+      }
+
       const posEl = document.getElementById("positionsContent");
       if (posEl) posEl.innerHTML = `
         <div class="positions-list">
@@ -1716,7 +2013,7 @@ async function doAddLiquidity() {
 async function doRemoveLiquidity() {
   const lpAmt = parseFloat(document.getElementById("removeLPAmt").value);
   if (!lpAmt) { showToast("Enter LP token amount.", "error"); return; }
-  if (!state.address) { await connectWallet(); if (!state.address) return; }
+  if (!state.address) { showToast("Connect your wallet first.", "error"); connectWallet(); return; }
   const isMock = !CONTRACTS.ROUTER;
   showToast("⏳ Removing liquidity…", "");
   await simulateTx(2000);
@@ -1779,8 +2076,11 @@ function renderFarms() {
       </div>
 
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:14px">
-        <div style="font-size:12px;color:var(--muted);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase">Staked</div>
-        <div style="font-family:'Space Mono',monospace;font-size:15px" id="staked-${farm.pid}">0.0000 LP</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div style="font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Staked</div>
+          <div style="font-size:12px;color:var(--muted)">LP Balance: <span id="lpbal-${farm.pid}">${(state.lpBalances?.[farm.pid] || 0).toFixed(4)}</span></div>
+        </div>
+        <div style="font-family:'Space Mono',monospace;font-size:15px" id="staked-${farm.pid}">${(state.stakedAmounts[farm.pid] || 0).toFixed(4)} LP</div>
       </div>
 
       <div class="farm-actions">
@@ -1861,66 +2161,121 @@ async function harvestAll() {
 
 let _stakeCtx = {};
 function openStake(pid, action) {
-  if (!state.address) { connectWallet(); return; }
+  if (!state.address) { showToast("Connect your wallet first.", "error"); connectWallet(); return; }
   _stakeCtx = { pid, action };
-  const farm = FARMS[pid];
+  const farm   = FARMS[pid];
   const staked = state.stakedAmounts[pid] || 0;
+  const lpBal  = state.lpBalances?.[pid]  || 0;
+
   document.getElementById("stakeModalTitle").textContent = action === "stake"
-    ? `Stake ${farm.name} LP`
-    : `Unstake ${farm.name} LP`;
+    ? "Stake " + farm.name + " LP"
+    : "Unstake " + farm.name + " LP";
+
   document.getElementById("stakeConfirmBtn").textContent = action === "stake" ? "CONFIRM STAKE" : "CONFIRM UNSTAKE";
+
   document.getElementById("stakeBalance").textContent = action === "stake"
-    ? "LP Balance: 0.0000"
-    : `Staked: ${staked.toFixed(4)} LP`;
+    ? "LP Balance: " + lpBal.toFixed(4)
+    : "Staked: " + staked.toFixed(4) + " LP";
+
+  const approveBtn = document.getElementById("stakeApproveBtn");
+  if (approveBtn) {
+    approveBtn.style.display = (action === "stake" && CONTRACTS.CHEF && farm.lpAddr) ? "block" : "none";
+  }
+
   document.getElementById("stakeAmt").value = "";
   document.getElementById("stakeModal").classList.add("open");
 }
 
 function closeStakeModal() { document.getElementById("stakeModal").classList.remove("open"); }
 
+async function approveLP() {
+  const { pid } = _stakeCtx;
+  const farm = FARMS[pid];
+  if (!farm?.lpAddr || !CONTRACTS.CHEF) { showToast("No LP token to approve.", "error"); return; }
+  const btn = document.getElementById("stakeApproveBtn");
+  btn.textContent = "Approving…";
+  btn.disabled = true;
+  try {
+    showToast("⏳ Approving LP token for MasterChef…", "");
+    await approveToken(farm.lpAddr, CONTRACTS.CHEF, ethers.MaxUint256);
+    showToast("✅ LP token approved! You can now stake.", "success");
+    btn.textContent = "✓ APPROVED";
+    btn.style.color = "var(--green)";
+    btn.style.borderColor = "var(--green)";
+  } catch(e) {
+    showToast("❌ Approval failed: " + (e?.reason || e?.message || "").slice(0, 80), "error");
+    btn.textContent = "APPROVE LP TOKEN";
+    btn.disabled = false;
+  }
+}
+
 async function confirmStake() {
   const { pid, action } = _stakeCtx;
-  const amt = parseFloat(document.getElementById("stakeAmt").value);
+  const amt    = parseFloat(document.getElementById("stakeAmt").value);
   if (!amt || amt <= 0) { showToast("Enter a valid amount.", "error"); return; }
+
   const staked = state.stakedAmounts[pid] || 0;
-  if (action === "unstake" && amt > staked) {
-    showToast(`Cannot unstake more than staked (${staked.toFixed(4)} LP).`, "error"); return;
+  const lpBal  = state.lpBalances?.[pid]  || 0;
+
+  if (action === "stake" && amt > lpBal) {
+    showToast("Amount exceeds your LP balance (" + lpBal.toFixed(4) + " LP).", "error"); return;
   }
+  if (action === "unstake" && amt > staked) {
+    showToast("Cannot unstake more than staked (" + staked.toFixed(4) + " LP).", "error"); return;
+  }
+
   closeStakeModal();
   const isMock = !CONTRACTS.CHEF;
-  const label = action === "stake" ? "Staking" : "Unstaking";
-  showToast(`⏳ ${label} ${amt} LP tokens…`, "");
+  const label  = action === "stake" ? "Staking" : "Unstaking";
+  showToast("⏳ " + label + " " + amt + " LP tokens…", "");
 
   if (!isMock) {
-    // Live: call MasterChef deposit/withdraw
     try {
-      const chef = new ethers.Contract(CONTRACTS.CHEF, CHEF_ABI, state.signer);
-      const farm = FARMS[pid];
+      const chef  = new ethers.Contract(CONTRACTS.CHEF, CHEF_ABI, state.signer);
+      const farm  = FARMS[pid];
       const amtBig = ethers.parseUnits(String(amt), 18);
       if (action === "stake") {
-        if (farm.lpAddr) await approveToken(farm.lpAddr, CONTRACTS.CHEF, amtBig);
+        if (farm.lpAddr) {
+          showToast("⏳ Approving LP token…", "");
+          await approveToken(farm.lpAddr, CONTRACTS.CHEF, amtBig);
+        }
+        showToast("⏳ Staking LP tokens…", "");
         const tx = await chef.deposit(pid, amtBig);
         await tx.wait();
-        addTx("Stake", `${amt} LP in ${farm.name}`, tx.hash, "ok");
+        addTx("Stake", amt + " LP in " + farm.name, tx.hash, "ok");
       } else {
+        showToast("⏳ Withdrawing LP tokens…", "");
         const tx = await chef.withdraw(pid, amtBig);
         await tx.wait();
-        addTx("Unstake", `${amt} LP from ${farm.name}`, tx.hash, "ok");
+        addTx("Unstake", amt + " LP from " + farm.name, tx.hash, "ok");
       }
     } catch(e) {
-      showToast("❌ " + (e?.reason || e?.message || "Tx failed").slice(0,100), "error");
+      showToast("❌ " + (e?.reason || e?.message || "Tx failed").slice(0, 100), "error");
       return;
     }
   } else {
     await simulateTx(2000);
     const farm = FARMS[pid];
-    addTx(action === "stake" ? "Stake" : "Unstake", `${amt} LP in ${farm.name}`, "0x"+Math.random().toString(16).slice(2,12), "ok");
+    addTx(action === "stake" ? "Stake" : "Unstake", amt + " LP in " + farm.name, "0x" + Math.random().toString(16).slice(2, 12), "ok");
   }
 
-  showToast(`✅ Successfully ${action === "stake" ? "staked" : "unstaked"} ${amt} LP!`, "success");
-  state.stakedAmounts[pid] = action === "stake" ? staked + amt : Math.max(0, staked - amt);
-  const el = document.getElementById(`staked-${pid}`);
-  if (el) el.textContent = state.stakedAmounts[pid].toFixed(4) + " LP";
+  // Update state
+  if (!state.lpBalances) state.lpBalances = {};
+  if (action === "stake") {
+    state.stakedAmounts[pid] = staked + amt;
+    state.lpBalances[pid]    = Math.max(0, lpBal - amt);
+  } else {
+    state.stakedAmounts[pid] = Math.max(0, staked - amt);
+    state.lpBalances[pid]    = lpBal + amt;
+  }
+
+  // Update UI
+  const stakedEl = document.getElementById("staked-" + pid);
+  if (stakedEl) stakedEl.textContent = state.stakedAmounts[pid].toFixed(4) + " LP";
+  const lpBalEl = document.getElementById("lpbal-" + pid);
+  if (lpBalEl) lpBalEl.textContent = state.lpBalances[pid].toFixed(4);
+
+  showToast("✅ Successfully " + (action === "stake" ? "staked" : "unstaked") + " " + amt + " LP!", "success");
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -2049,7 +2404,7 @@ function setMax(inputId) {
     if (action === "unstake") {
       input.value = (state.stakedAmounts[pid] || 0).toFixed(6);
     } else {
-      input.value = "0.0000"; // LP balance not tracked in mock
+      input.value = (state.lpBalances?.[pid] || 0).toFixed(6);
     }
   }
 }
@@ -2144,11 +2499,41 @@ function initTokenPage() {
   document.getElementById('gangTokenPrice').textContent = `$${TOKENS.GANG.price.toFixed(4)}`;
 }
 
+function copyTreasuryAddress(btn) {
+  const addr = TREASURY.address;
+  navigator.clipboard.writeText(addr).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = "✅ COPIED!";
+    setTimeout(() => { btn.innerHTML = orig; }, 2000);
+    showToast("Treasury address copied! 🏦", "success");
+  }).catch(() => {
+    showToast("Copy failed — " + addr, "error");
+  });
+}
+
 function copyGangAddress() {
   navigator.clipboard.writeText(CONTRACTS.GANG).then(() => {
     showToast('Contract address copied! 🔫', 'success');
   }).catch(() => {
     showToast('Copy failed — address: ' + CONTRACTS.GANG, 'error');
+  });
+}
+
+function copyContractAddress(btn) {
+  const addr = CONTRACTS.GANG;
+  navigator.clipboard.writeText(addr).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = "✅ COPIED!";
+    btn.style.borderColor = "var(--green)";
+    btn.style.color = "var(--green)";
+    setTimeout(() => {
+      btn.innerHTML = orig;
+      btn.style.borderColor = "rgba(212,160,23,0.4)";
+      btn.style.color = "var(--gold)";
+    }, 2000);
+    showToast('Contract address copied! 🔫', 'success');
+  }).catch(() => {
+    showToast('Copy failed — address: ' + addr, 'error');
   });
 }
 
@@ -2163,6 +2548,8 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
 setInterval(() => {
   const el = document.getElementById('gangTokenPrice');
   if (el) el.textContent = `$${TOKENS.GANG.price.toFixed(4)}`;
+  const te = document.getElementById("treasuryEarnedDisplay");
+  if (te) te.textContent = `$${(state.treasuryEarned || 0).toFixed(4)}`;
 }, 4000);
 
 
